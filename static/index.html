@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Notes Studio</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="t" content="__TOKEN__">
+<style>
+:root{--bg:#14161a;--p1:#1b1e24;--p2:#22262e;--line:#2c313b;--tx:#e6e8ec;--mu:#8b93a1;--ac:#6aa7ff;--ok:#4fbf8a;--bad:#e06c6c;--warn:#e0b341}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:var(--p2);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer}button:hover{border-color:var(--ac)}
+button.pri{background:var(--ac);color:#08121f;border-color:var(--ac);font-weight:600}button.dng:hover{border-color:var(--bad);color:var(--bad)}
+input,select,textarea{background:var(--p1);border:1px solid var(--line);border-radius:6px;padding:6px 8px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--ac)}
+#app{display:grid;grid-template-columns:230px 340px 1fr;height:100%}
+#side{background:var(--p1);border-right:1px solid var(--line);overflow:auto;padding:10px;display:flex;flex-direction:column;gap:4px}
+#side h4{margin:12px 6px 4px;color:var(--mu);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.nav{display:flex;justify-content:space-between;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer}.nav:hover{background:var(--p2)}.nav.on{background:#223049;color:#fff}
+.nav .c{color:var(--mu);font-size:12px}.nav .d{color:var(--warn);font-size:11px;margin-left:4px}
+.tag{display:inline-block;background:var(--p2);border:1px solid var(--line);border-radius:10px;padding:1px 8px;margin:2px;font-size:12px;cursor:pointer}.tag.on{border-color:var(--ac);color:var(--ac)}
+#list{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+#lt{padding:8px;display:flex;gap:6px;border-bottom:1px solid var(--line);flex-wrap:wrap}#lt input{flex:1;min-width:120px}
+#bulk{display:none;padding:6px 8px;gap:6px;background:#1f2a3d;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+#items{overflow:auto;flex:1}
+.it{padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:8px}.it:hover{background:var(--p1)}.it.on{background:#1d2840}
+.it .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .s{color:var(--mu);font-size:12px;max-height:34px;overflow:hidden}.it .m{color:var(--mu);font-size:11px;margin-top:2px}
+.it .bx{flex:none;padding-top:2px}.it .bd{flex:1;min-width:0}.mask{filter:blur(5px);user-select:none}
+#ed{display:flex;flex-direction:column;min-height:0;min-width:0}
+#et{padding:8px 12px;border-bottom:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#title{flex:1;min-width:200px;font-size:18px;font-weight:600;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0}
+#meta{padding:6px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);color:var(--mu)}
+#meta input{width:220px}#theme{width:200px}
+#body{flex:1;min-height:0;display:flex}
+#txt{flex:1;resize:none;border:none;border-radius:0;padding:14px 18px;font:15px/1.6 ui-monospace,Menlo,Consolas,monospace;background:var(--bg)}
+#pv{flex:1;overflow:auto;padding:14px 22px;border-left:1px solid var(--line);display:none;font-size:15px;line-height:1.65}
+#pv h1,#pv h2,#pv h3{margin:.8em 0 .3em}#pv code{background:var(--p2);padding:1px 5px;border-radius:4px}#pv pre{background:var(--p2);padding:10px;border-radius:6px;overflow:auto}#pv hr{border:0;border-top:1px solid var(--line)}#pv a{color:var(--ac)}
+#sb{padding:5px 12px;border-top:1px solid var(--line);color:var(--mu);font-size:12px;display:flex;gap:14px;align-items:center}
+#att{padding:6px 12px;border-top:1px solid var(--line);display:none;gap:8px;flex-wrap:wrap;align-items:center}
+#att a{color:var(--ac);text-decoration:none;background:var(--p2);padding:2px 8px;border-radius:6px}
+.empty{margin:auto;color:var(--mu);text-align:center;padding:40px}
+#drop{position:fixed;inset:0;background:rgba(20,40,80,.85);display:none;align-items:center;justify-content:center;font-size:26px;z-index:50;border:3px dashed var(--ac)}
+#study{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:40}
+#sbar{padding:10px 16px;display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--line);flex-wrap:wrap}
+#card{flex:1;overflow:auto;padding:30px 12vw}#card h2{margin-top:0}#card .txt{white-space:pre-wrap;font-size:18px;line-height:1.7}
+.cl{background:#2b3140;border-radius:4px;padding:0 6px;color:transparent;cursor:pointer;user-select:none}.cl.rev{color:var(--warn);background:transparent}
+#sact{padding:14px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center}
+#toast{position:fixed;bottom:16px;right:16px;background:var(--p2);border:1px solid var(--line);padding:8px 14px;border-radius:8px;display:none;z-index:60}
+.mu{color:var(--mu)}
+</style></head><body>
+<div id="app">
+ <div id="side">
+  <div style="display:flex;gap:6px"><button class="pri" id="bnew" style="flex:1">+ New note</button></div>
+  <div style="display:flex;gap:6px;margin-top:4px"><button id="bup" style="flex:1">Upload docs</button><button id="bstudy" style="flex:1">Study</button></div>
+  <input type="file" id="file" multiple hidden>
+  <h4>Library</h4><div id="navmain"></div>
+  <h4>Themes <span id="addtheme" style="cursor:pointer;float:right;color:var(--ac)" title="Rename theme (right-click a theme)">&nbsp;</span></h4><div id="themes"></div>
+  <h4>Tags</h4><div id="tags"></div>
+  <div style="flex:1"></div><div class="mu" id="stats" style="padding:8px;font-size:12px"></div>
+  <button id="bexp">Export all (.zip)</button>
+ </div>
+ <div id="list">
+  <div id="lt"><input id="q" placeholder="Search all notes (Ctrl+K)"><select id="sort"><option value="modified">Recent</option><option value="created">Newest</option><option value="oldest">Oldest</option><option value="title">A-Z</option></select></div>
+  <div id="bulk"><span id="bcount"></span><select id="btheme"></select><button id="bmove">Move</button><input id="btag" placeholder="tag" style="width:90px"><button id="btagbtn">Tag</button><button id="bmerge">Merge</button><button id="btrash" class="dng">Trash</button><button id="brest" style="display:none">Restore</button><button id="bclr">Clear</button></div>
+  <div id="items"></div>
+ </div>
+ <div id="ed"><div class="empty" id="none">Select a note, create one, or drop documents anywhere to import them.</div>
+  <div id="edmain" style="display:none;flex-direction:column;min-height:0;flex:1">
+   <div id="et"><input id="title" placeholder="Title"><button id="bstar" title="Star">☆</button><button id="bprev">Preview</button><button id="bdel" class="dng">Trash</button></div>
+   <div id="meta"><span>Theme</span><input id="theme" list="thl"><datalist id="thl"></datalist><span>Tags</span><input id="tg" placeholder="comma, separated"><span id="dates"></span></div>
+   <div id="body"><textarea id="txt" spellcheck="true"></textarea><div id="pv"></div></div>
+   <div id="att"></div>
+   <div id="sb"><span id="saved">Saved</span><span id="wc"></span><span class="mu">Ctrl+S save · Ctrl+K search</span></div>
+  </div></div>
+</div>
+<div id="drop">Drop documents to import (txt, md, docx, pdf, html, images…)</div>
+<div id="study">
+ <div id="sbar"><b>Study</b><select id="sth"></select><select id="smode"><option value="due">Due for review</option><option value="random">Random</option></select>
+  <label><input type="checkbox" id="scloze"> Fill-in-the-blanks</label><span class="mu" id="sinfo"></span><div style="flex:1"></div><button id="sclose">Close (Esc)</button></div>
+ <div id="card"></div>
+ <div id="sact"></div>
+</div>
+<div id="toast"></div>
+<script>
+const T=document.querySelector('meta[name=t]').content;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function J(path,method='GET',body){const r=await fetch(path,{method,headers:{'X-Token':T,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const d=await r.json();if(!r.ok)throw new Error(d.error||r.status);return d}
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600)}
+let S={theme:'',tag:'',view:'',q:'',sort:'modified',cur:null,sel:new Set(),notes:[],themes:[],dirty:false,timer:null,preview:false};
+const SENS=t=>/^sensitive/i.test(t||'');
+function md(src){let h=esc(src);const bl=[];h=h.replace(/```([\s\S]*?)```/g,(_,c)=>{bl.push(c);return '\u0000'+(bl.length-1)+'\u0000'});
+ h=h.replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^# (.*)$/gm,'<h1>$1</h1>').replace(/^---$/gm,'<hr>')
+ .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<i>$2</i>').replace(/`([^`\n]+)`/g,'<code>$1</code>')
+ .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+ .replace(/^(?:- |\* )(.*)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>');
+ h=h.split(/\n{2,}/).map(p=>/^\s*<(h\d|ul|hr|pre)/.test(p)?p:'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('\n');
+ return h.replace(/\u0000(\d+)\u0000/g,(_,i)=>'<pre>'+bl[i]+'</pre>')}
+async function loadNav(){const d=await J('/api/themes');S.themes=d.themes;
+ const nv=(k,l,c,extra='')=>`<div class="nav ${(S.view===k&&!S.theme&&!S.tag)?'on':''}" data-v="${k}"><span>${l}</span><span class="c">${c}${extra}</span></div>`;
+ $('#navmain').innerHTML=nv('','All notes',d.all)+nv('starred','★ Starred',d.starred)+nv('trash','🗑 Trash',d.trash);
+ $('#themes').innerHTML=d.themes.map(t=>`<div class="nav ${S.theme===t.theme?'on':''}" data-t="${esc(t.theme)}"><span>${esc(t.theme)}</span><span class="c">${t.n}${t.due?`<span class="d" title="due for study">●${t.due}</span>`:''}</span></div>`).join('');
+ $('#tags').innerHTML=d.tags.slice(0,60).map(([t,n])=>`<span class="tag ${S.tag===t?'on':''}" data-g="${esc(t)}">${esc(t)} ${n}</span>`).join('')||'<span class="mu">none yet</span>';
+ const opts=d.themes.map(t=>`<option>${esc(t.theme)}</option>`).join('');$('#btheme').innerHTML=opts;$('#thl').innerHTML=opts;$('#sth').innerHTML='<option value="">All themes</option>'+opts;
+ const s=await J('/api/stats');$('#stats').textContent=`${s.total} notes · ${s.words.toLocaleString()} words · ${s.due} due · ${s.learned} studied`}
+async function loadList(){const p=new URLSearchParams({theme:S.theme,tag:S.tag,view:S.view,q:S.q,sort:S.sort});
+ const d=await J('/api/notes?'+p);S.notes=d.notes;
+ $('#items').innerHTML=d.notes.map(n=>{const m=SENS(n.theme);return `<div class="it ${S.cur===n.id?'on':''}" data-id="${n.id}"><div class="bx"><input type="checkbox" class="ck" ${S.sel.has(n.id)?'checked':''}></div><div class="bd"><div class="t">${n.starred?'★ ':''}${m?'<span class="mask">':''}${esc(n.title||'(untitled)')}${m?'</span>':''}</div><div class="s ${m?'mask':''}">${esc(n.body.slice(0,140))}</div><div class="m">${esc(n.theme)} · ${new Date(n.modified*1000).toLocaleDateString()}${n.tags.length?' · '+esc(n.tags.join(', ')):''}</div></div></div>`}).join('')||'<div class="empty">No notes here.</div>';
+ bulkUI()}
+function bulkUI(){const n=S.sel.size;$('#bulk').style.display=n?'flex':'none';$('#bcount').textContent=n+' selected';$('#brest').style.display=S.view==='trash'?'':'none';$('#btrash').style.display=S.view==='trash'?'none':''}
+async function refresh(){await Promise.all([loadNav(),loadList()])}
+async function open(id){await flush();const n=await J('/api/note/'+id);S.cur=id;$('#none').style.display='none';$('#edmain').style.display='flex';
+ $('#title').value=n.title;$('#txt').value=n.body;$('#theme').value=n.theme;$('#tg').value=n.tags.join(', ');$('#bstar').textContent=n.starred?'★':'☆';
+ $('#dates').textContent='created '+new Date(n.created*1000).toLocaleDateString()+(n.source?' · '+n.source:'');S.dirty=false;$('#saved').textContent='Saved';wc();
+ const a=n.attachments||[];$('#att').style.display=a.length?'flex':'none';$('#att').innerHTML=a.length?'<span class="mu">Attached:</span>'+a.map(x=>`<a href="/file/${x.id}?t=${T}" target="_blank">${esc(x.filename)} (${Math.round(x.size/1024)} KB)</a>`).join(''):'';
+ $('#bdel').textContent=n.deleted?'Delete forever':'Trash';$('#bdel').dataset.del=n.deleted?1:0;if(S.preview)$('#pv').innerHTML=md(n.body);
+ document.querySelectorAll('.it').forEach(e=>e.classList.toggle('on',+e.dataset.id===id))}
+function wc(){const t=$('#txt').value;$('#wc').textContent=(t.trim()?t.trim().split(/\s+/).length:0)+' words'}
+function touch(){S.dirty=true;$('#saved').textContent='Editing…';clearTimeout(S.timer);S.timer=setTimeout(flush,900);wc();if(S.preview)$('#pv').innerHTML=md($('#txt').value)}
+async function flush(){if(!S.dirty||!S.cur)return;S.dirty=false;clearTimeout(S.timer);
+ try{await J('/api/note/'+S.cur,'PUT',{title:$('#title').value,body:$('#txt').value,theme:$('#theme').value,tags:$('#tg').value});$('#saved').textContent='Saved';await refresh()}catch(e){$('#saved').textContent='Save failed: '+e.message;S.dirty=true}}
+async function newNote(){await flush();const d=await J('/api/note','POST',{title:'',body:'',theme:S.theme||'Inbox'});await refresh();await open(d.id);$('#title').focus()}
+async function upload(files){let n=0;for(const f of files){if(f.size>60*1024*1024){toast(f.name+' is over 60 MB');continue}
+ try{const r=await fetch('/api/upload',{method:'POST',headers:{'X-Token':T,'X-Filename':encodeURIComponent(f.name),'X-Theme':encodeURIComponent(S.theme||'Documents')},body:f});const d=await r.json();if(!r.ok)throw new Error(d.error);n++;if(n===files.length||files.length===1)S.cur=d.id}catch(e){toast('Upload failed: '+e.message)}}
+ if(n){toast(`Imported ${n} document${n>1?'s':''}`);await refresh();if(S.cur)open(S.cur)}}
+// events
+$('#navmain').onclick=e=>{const n=e.target.closest('.nav');if(!n)return;S.view=n.dataset.v;S.theme='';S.tag='';S.sel.clear();refresh()};
+$('#themes').onclick=e=>{const n=e.target.closest('.nav');if(!n)return;S.theme=n.dataset.t;S.tag='';S.view='';S.sel.clear();refresh()};
+$('#themes').oncontextmenu=async e=>{const n=e.target.closest('.nav');if(!n)return;e.preventDefault();const to=prompt('Rename theme "'+n.dataset.t+'" to (an existing name merges them):',n.dataset.t);if(to&&to!==n.dataset.t){await J('/api/theme/rename','POST',{from:n.dataset.t,to});if(S.theme===n.dataset.t)S.theme=to;refresh()}};
+$('#tags').onclick=e=>{const t=e.target.closest('.tag');if(!t)return;S.tag=S.tag===t.dataset.g?'':t.dataset.g;S.view='';refresh()};
+$('#items').onclick=e=>{const it=e.target.closest('.it');if(!it)return;const id=+it.dataset.id;if(e.target.classList.contains('ck')){e.target.checked?S.sel.add(id):S.sel.delete(id);bulkUI();return}open(id)};
+let qt;$('#q').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=e.target.value;loadList()},200)};$('#sort').onchange=e=>{S.sort=e.target.value;loadList()};
+['#title','#txt','#theme','#tg'].forEach(s=>$(s).addEventListener('input',touch));
+$('#bnew').onclick=newNote;$('#bup').onclick=()=>$('#file').click();$('#file').onchange=e=>{upload([...e.target.files]);e.target.value=''};
+$('#bstar').onclick=async()=>{if(!S.cur)return;const on=$('#bstar').textContent==='☆';await J('/api/note/'+S.cur,'PUT',{starred:on});$('#bstar').textContent=on?'★':'☆';refresh()};
+$('#bprev').onclick=()=>{S.preview=!S.preview;$('#pv').style.display=S.preview?'block':'none';$('#bprev').textContent=S.preview?'Hide preview':'Preview';if(S.preview)$('#pv').innerHTML=md($('#txt').value)};
+$('#bdel').onclick=async()=>{if(!S.cur)return;const hard=$('#bdel').dataset.del==='1';if(hard&&!confirm('Delete this note forever?'))return;S.dirty=false;await J('/api/note/'+S.cur+(hard?'?hard=1':''),'DELETE');S.cur=null;$('#edmain').style.display='none';$('#none').style.display='';refresh()};
+async function bulk(a,extra={}){if(!S.sel.size)return;const r=await J('/api/bulk','POST',{ids:[...S.sel],action:a,...extra});S.sel.clear();await refresh();if(r.id)open(r.id)}
+$('#bmove').onclick=()=>bulk('move',{theme:$('#btheme').value});$('#btagbtn').onclick=()=>{if($('#btag').value.trim())bulk('tag',{tag:$('#btag').value})};
+$('#bmerge').onclick=()=>{if(S.sel.size<2)return toast('Select 2+ notes to merge');bulk('merge')};$('#btrash').onclick=()=>bulk('trash');$('#brest').onclick=()=>bulk('restore');$('#bclr').onclick=()=>{S.sel.clear();loadList()};
+$('#bexp').onclick=()=>{location.href='/api/export?t='+T};
+// drag & drop
+let dc=0;addEventListener('dragenter',e=>{if(e.dataTransfer.types.includes('Files')){dc++;$('#drop').style.display='flex'}});addEventListener('dragleave',()=>{if(--dc<=0){dc=0;$('#drop').style.display='none'}});
+addEventListener('dragover',e=>e.preventDefault());addEventListener('drop',e=>{e.preventDefault();dc=0;$('#drop').style.display='none';if(e.dataTransfer.files.length)upload([...e.dataTransfer.files])});
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();flush()}if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();$('#q').focus();$('#q').select()}
+ if($('#study').style.display==='flex'){if(e.key==='Escape')closeStudy();else if(e.key===' '&&!study.shown){e.preventDefault();reveal()}else if(study.shown&&'1234'.includes(e.key))grade(+e.key-1)}});
+addEventListener('beforeunload',e=>{if(S.dirty){flush();e.preventDefault();e.returnValue=''}});
+// study
+const study={note:null,shown:false};
+function blanks(text){let i=0;return esc(text).replace(/\b([A-Za-z][A-Za-z'’-]{4,})\b/g,(m)=>(++i%4===0)?`<span class="cl" onclick="this.classList.toggle('rev')">${m}</span>`:m)}
+async function nextCard(){const p=new URLSearchParams({theme:$('#sth').value,mode:$('#smode').value});const d=await J('/api/study/next?'+p);study.note=d.note;study.shown=false;
+ $('#sinfo').textContent=d.note?d.remaining+' left':'';
+ if(!d.note){$('#card').innerHTML='<div class="empty">Nothing due here. Switch to Random, or pick another theme.</div>';$('#sact').innerHTML='';return}
+ const cl=$('#scloze').checked;$('#card').innerHTML=`<div class="mu">${esc(d.note.theme)}${d.note.tags.length?' · '+esc(d.note.tags.join(', ')):''}</div><h2>${SENS(d.note.theme)?'(sensitive note)':esc(d.note.title||'(untitled)')}</h2>`+(cl&&!SENS(d.note.theme)?`<div class="txt">${blanks(d.note.body)}</div><p class="mu">Click a blank to reveal it, then grade how well you recalled the whole note.</p>`:'<p class="mu">Recall what this note says, then reveal.</p><div class="txt" id="ans" style="display:none"></div>');
+ $('#sact').innerHTML=cl&&!SENS(d.note.theme)?gbtns():'<button class="pri" onclick="reveal()">Show note (Space)</button>'}
+const gbtns=()=>['Again','Hard','Good','Easy'].map((l,i)=>`<button onclick="grade(${i})">${i+1} · ${l}</button>`).join('');
+function reveal(){if(!study.note)return;const a=$('#ans');if(a){a.style.display='block';a.textContent=study.note.body}study.shown=true;$('#sact').innerHTML=gbtns()}
+async function grade(g){if(!study.note)return;const r=await J('/api/study/grade','POST',{id:study.note.id,grade:g});toast(g?`Next review in ~${r.next_days} day(s)`:'See it again in 10 min');nextCard()}
+document.addEventListener('click',e=>{if(e.target.classList&&e.target.classList.contains('cl'))study.shown=true});
+function openStudy(){$('#study').style.display='flex';if(S.theme)$('#sth').value=S.theme;nextCard()}function closeStudy(){$('#study').style.display='none';refresh()}
+$('#bstudy').onclick=openStudy;$('#sclose').onclick=closeStudy;$('#sth').onchange=nextCard;$('#smode').onchange=nextCard;$('#scloze').onchange=nextCard;
+refresh();
+</script></body></html>
